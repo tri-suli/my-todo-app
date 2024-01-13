@@ -67,9 +67,20 @@
         </div>
         <div class="row">
             <div class="col-12">
-                <div class="table-filter">
-
+                <div class="row">
+                    <div class="col-6">
+                        <?php if (isset($_SESSION['errors']['notfound'])): ?>
+                            <p class="error-message">
+                                <?php
+                                    echo $_SESSION['errors']['notfound'];
+                                    unset($_SESSION['errors']);
+                                ?>
+                            </p>
+                        <?php endif; ?>
+                    </div>
                 </div>
+            </div>
+            <div class="col-12">
                 <table class="table-responsive">
                     <thead>
                         <?php foreach (['Title', 'Priority', 'Status', 'Created On'] as $header): ?>
@@ -84,6 +95,14 @@
                                 <td><?php print $task['priority']; ?></td>
                                 <td><?php print $task['status']; ?></td>
                                 <td><?php print $task['created_at']; ?></td>
+                                <td>
+                                    <a href="../app/destroy.php?id=<?php echo $task['id']; ?>" class="btn btn-sm btn-danger">Remove</a>
+                                        <form action="../app/destroy.php" method="POST">
+                                            <input type="hidden" name="_method" value="DELETE">
+                                            <input type="hidden" name="id" value="<?php echo $task['id']; ?>">
+                                            <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+                                        </form>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>

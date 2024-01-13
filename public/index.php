@@ -96,12 +96,21 @@
                                 <td><?php print $task['status']; ?></td>
                                 <td><?php print $task['created_at']; ?></td>
                                 <td>
-                                    <a href="../app/destroy.php?id=<?php echo $task['id']; ?>" class="btn btn-sm btn-danger">Remove</a>
+                                    <?php if($task['status'] === 1): ?>
+                                        <span><strong>Completed</strong></span>
+                                    <?php else: ?>
+                                        <form action="../app/update.php" method="POST">
+                                            <input type="hidden" name="_method" value="PATCH">
+                                            <input type="hidden" name="id" value="<?php echo $task['id']; ?>">
+                                            <input type="hidden" name="status" value="1">
+                                            <button class="btn btn-sm btn-danger" type="submit">Mark as Complete</button>
+                                        </form>
                                         <form action="../app/destroy.php" method="POST">
                                             <input type="hidden" name="_method" value="DELETE">
                                             <input type="hidden" name="id" value="<?php echo $task['id']; ?>">
                                             <button class="btn btn-sm btn-danger" type="submit">Delete</button>
                                         </form>
+                                    <?php endif;?>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

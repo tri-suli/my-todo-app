@@ -4,13 +4,22 @@ declare(strict_types=1);
 
 require_once './validation.php';
 
-function store (): bool|array {
-    $input = $_POST;
+function store (array $input): bool|array {
     $errors = [];
-    $db = new SQLite3('../database/todo.db');
+    /** @var SQLite3 $db */
+    $db = require_once './init.php';
+    touchDB($db);
 
     if (isEmpty($input['title'])) {
         $errors['title'] = 'The task title cannot be empty';
+    }
+
+    $statement = $db->prepare('SELECT title from tasks where title = :t');
+    $statement->bindValue(':t', $input['title']);
+    $query = $statement->getSQL(true);
+    $taskTitle = $db->querySingle($query);
+    if ($taskTitle === $input['title']) {
+        $errors['title'] = sprintf('The task title "%s" is already exists', $taskTitle);
     }
 
     if (!empty($errors)) {
@@ -19,7 +28,6 @@ function store (): bool|array {
 
     try {
         $priority = 0;
-        $db->enableExceptions(true);
 
         if (isset($input['priority'])) {
             $priority = $input['priority'];
@@ -42,7 +50,7 @@ function store (): bool|array {
 }
 
 
-$result = store();
+$result = store($_POST);
 
 if (is_array($result)) {
     session_start();

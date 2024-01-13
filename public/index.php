@@ -5,7 +5,7 @@
     $tasks = [];
     try {
         touchDB($db);
-        $results = $db->query("SELECT id, title, priority, status, created_at from tasks limit 10");
+        $results = $db->query("SELECT id, title, priority, status, created_at from tasks WHERE priority > 0 ORDER BY priority, title limit 10");
 
         while ($row = $results->fetchArray(1)) {
             $tasks[] = $row;

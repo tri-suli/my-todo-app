@@ -1,15 +1,20 @@
 <?php
+    /** @var SQLite3 $db */
     $db = require_once '../app/init.php';
     session_start();
 
     $tasks = [];
+    $taskCount = 0;
     try {
         touchDB($db);
-        $results = $db->query("SELECT id, title, priority, status, created_at from tasks WHERE priority > 0 ORDER BY priority, title limit 10");
+        $results = $db->query("SELECT id, title, priority, status, created_at from tasks ORDER BY priority, title limit 10");
 
         while ($row = $results->fetchArray(1)) {
             $tasks[] = $row;
         }
+
+        $taskCount = $db->query('SELECT COUNT(*) total from tasks')->fetchArray()['total'];
+        $taskCompleted = $db->query('SELECT COUNT(*) total from tasks WHERE status = 1')->fetchArray(1)['total'];
     } catch (Exception $e) {
         var_dump($e->getMessage());
         die();
@@ -115,6 +120,16 @@
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <td>
+                                <div class="task-summary">
+                                    <p class="task-status-text"><?php print sprintf('Total: %s', $taskCount) ?></p>
+                                    <p class="task-status-text"><?php print sprintf('Completed: %s', $taskCompleted) ?></p>
+                                </div>
+                            </td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>

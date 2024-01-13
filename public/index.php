@@ -1,5 +1,7 @@
 <?php
     /** @var SQLite3 $db */
+    require '../app/Enum/Priority.php';
+    require '../app/Enum/Status.php';
     $db = require_once '../app/init.php';
     session_start();
 
@@ -88,21 +90,23 @@
             <div class="col-12">
                 <table class="table-responsive">
                     <thead>
+                        <th style="width: 1%;">#</th>
                         <?php foreach (['Title', 'Priority', 'Status', 'Created On'] as $header): ?>
-                            <th><?php print $header; ?></th>
+                            <th style="width: 5%;"><?php print $header; ?></th>
                         <?php endforeach; ?>
+                        <th style="width: 1%;">Actions</th>
                     </thead>
                     <tbody>
                         <?php foreach ($tasks as $i => $task): ?>
                             <tr>
                                 <td><?php print $i+1; ?></td>
                                 <td><?php print $task['title']; ?></td>
-                                <td><?php print $task['priority']; ?></td>
-                                <td><?php print $task['status']; ?></td>
+                                <td><?php print \App\Enum\Priority::from($task['priority'])->label(); ?></td>
+                                <td><?php print \App\Enum\Status::from($task['status'])->label(); ?></td>
                                 <td><?php print $task['created_at']; ?></td>
                                 <td>
                                     <?php if($task['status'] === 1): ?>
-                                        <span><strong>Completed</strong></span>
+                                        <span><strong>Done</strong></span>
                                     <?php else: ?>
                                         <form action="../app/update.php" method="POST">
                                             <input type="hidden" name="_method" value="PATCH">

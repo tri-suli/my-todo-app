@@ -1,7 +1,9 @@
 /.idea
+/.phpunit.cache
 /.vscode
 /node_modules
 /vendor
 /database/*.db
 
+.phpunit.result.cache
 challenge.txt

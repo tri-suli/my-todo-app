@@ -1,10 +1,285 @@
-* {
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f4f4f4;
     margin: 0;
     padding: 0;
 }
 
-body {
-    font-family: Arial, sans-serif;
+h1 {
+    text-align: center;
+    color: #3498db;
+}
+
+/* Style caret for select */
+select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding-right: 30px;
+    background: url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.17.0/icons/caret-down-fill.svg') no-repeat right center/15px auto;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+/* Style options */
+select option {
+    padding: 10px;
+    font-size: 14px;
+    background-color: #fff;
+    color: #333;
+}
+
+/* Hover style for options */
+select option:hover {
+    background-color: #3498db;
+    color: #fff;
+}
+
+/* Hover style for select */
+select:hover {
+    border-color: #3498db;
+}
+
+/* Focus style for select */
+select:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+}
+
+.todo-app {
+    max-width: 600px;
+    margin: 20px auto;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.add-todo {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.add-todo label {
     font-size: 16px;
+    color: #555;
+}
+
+.add-todo .input-group {
+    display: flex;
+    gap: 15px;
+}
+
+.add-todo input,
+.add-todo select {
+    flex: 1;
+    padding: 12px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+.add-todo button {
+    background-color: #3498db;
+    color: #fff;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    align-self: flex-end;
+}
+
+.add-todo button:hover {
+    background-color: #2980b9;
+    color: #fff;
+    transform: scale(1.05); /* Add a slight scale effect on hover */
+}
+
+.add-todo button:active {
+    background-color: #1f77b4; /* Darker color when the button is pressed */
+}
+
+.filters {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.filters label {
+    font-size: 16px;
+    color: #555;
+}
+
+.filters select,
+.filters input[type="date"] {
+    padding: 12px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    width: 150px;
+}
+
+.filters select {
+    background-color: #fff;
+}
+
+.filters button {
+    background-color: #3498db;
+    color: #fff;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.filters button:hover {
+    background-color: #2980b9;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    background-color: #ecf0f1;
+    margin-bottom: 15px;
+    padding: 10px 20px;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+li h2, li p {
+    margin: 5px 0;
+}
+
+li button {
+    background-color: #e74c3c;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+li button:hover {
+    background-color: #c0392b;
+}
+
+li.list-completed {
+    background: greenyellow;
+    font-style: italic;
+    text-decoration: line-through;
+}
+
+.badge-urgent {
+    background: red;
+}
+
+.completed {
+    text-decoration: line-through;
+    color: #888;
+}
+
+.separator {
+    margin: 20px 0;
+    border: 1px solid #ddd;
+}
+
+/* Add styles for Todo list items */
+.todo-info {
+    flex: 1;
+}
+
+.todo-details {
+    font-size: 14px;
+    font-weight: 800;
+    color: #888;
+}
+
+.todo-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.todo-actions button {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+/* Add styles for icons */
+.edit-btn img,
+.status-btn img,
+.remove-btn img {
+    width: 20px;
+    height: 20px;
+}
+
+.todo-actions button:hover {
+    background-color: #3498db;
+    color: #fff;
+}
+
+.todo-actions button:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+}
+
+.todo-actions button:active {
+    background-color: #1f77b4; /* Darker color when the button is pressed */
+}
+
+
+#totals {
+    text-align: center;
+    margin-top: 20px;
+    color: #777;
+}
+
+.input-action {
+    display: flex;
+    justify-content: space-between;
+}
+
+.input-action .error-message {
+    font-size: 16px;
+    font-family: 'Poppins', sans-serif;
+    color: #e74c3c;
+}
+
+.badge {
+    color: #f3f3eb;
+    display: inline-block;
+    width: 10%;
+    text-align: center;
+    border-radius: 4px;
+    font-weight: bold;
     line-height: 1.5;
+}
+
+.badge-urgent {
+    background: #ef3737;
+}
+
+.badge-high {
+    background: #ffaa0b;
+}
+
+.badge-normal {
+    background: #3b3be8;
+}
+
+.badge-low {
+    background: #9b8d8d;
 }

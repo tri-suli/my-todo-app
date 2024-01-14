@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once './validation.php';
+require_once './Enum/Priority.php';
 
 function store (array $input): bool|array {
     $errors = [];
@@ -27,7 +28,7 @@ function store (array $input): bool|array {
     }
 
     try {
-        $priority = 0;
+        $priority = \App\Enum\Priority::NORMAL->value;
 
         if (isset($input['priority'])) {
             $priority = $input['priority'];

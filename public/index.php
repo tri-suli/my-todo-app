@@ -1,144 +1,123 @@
 <?php
-    /** @var SQLite3 $db */
-    require '../app/Enum/Priority.php';
-    require '../app/Enum/Status.php';
-    $db = require_once '../app/init.php';
-    session_start();
+/** @var SQLite3 $db */
+require '../app/Enum/Priority.php';
+require '../app/Enum/Status.php';
+$db = require_once '../app/init.php';
+session_start();
 
-    $tasks = [];
-    $taskCount = 0;
-    try {
-        touchDB($db);
-        $results = $db->query("SELECT id, title, priority, status, created_at from tasks ORDER BY priority, title limit 10");
+$tasks = [];
+$taskCount = 0;
+try {
+    touchDB($db);
+    $results = $db->query("SELECT id, title, priority, status, created_at from tasks ORDER BY priority, title limit 10");
 
-        while ($row = $results->fetchArray(1)) {
-            $tasks[] = $row;
-        }
-
-        $taskCount = $db->query('SELECT COUNT(*) total from tasks')->fetchArray()['total'];
-        $taskCompleted = $db->query('SELECT COUNT(*) total from tasks WHERE status = 1')->fetchArray(1)['total'];
-    } catch (Exception $e) {
-        var_dump($e->getMessage());
-        die();
-    } finally {
-        $db->close();
+    while ($row = $results->fetchArray(1)) {
+        $tasks[] = $row;
     }
+
+    $taskCount = $db->query('SELECT COUNT(*) total from tasks')->fetchArray()['total'];
+    $taskCompleted = $db->query('SELECT COUNT(*) total from tasks WHERE status = 1')->fetchArray(1)['total'];
+} catch (Exception $e) {
+    var_dump($e->getMessage());
+    die();
+} finally {
+    $db->close();
+}
 ?>
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>My Todo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/app.css">
+    <title>To-Do List App</title>
 </head>
 <body>
-    <?php echo 'Todo List App'; ?>
-
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <form id="task" action="../app/store.php" method="POST">
-                    <div class="form-control">
-                        <label for="title">Title</label>
-                        <input id="title" name="title" type="text">
-                        <?php if (isset($_SESSION['errors']['title'])): ?>
-                            <p class="error-message">
-                                <?php
-                                echo $_SESSION['errors']['title'];
-                                unset($_SESSION['errors']);
-                                ?>
-                            </p>
-                        <?php endif; ?>
-                    </div>
-
-                    <div class="form-control">
-                        <label for="priority">Priority</label>
-                        <select id="priority" name="priority">
-                            <option value="" selected disabled>Choose one</option>
-                            <option value="1">Urgent</option>
-                            <option value="2">High</option>
-                            <option value="3">Normal</option>
-                            <option value="4">Low</option>
-                        </select>
-                    </div>
-
-                    <div class="action">
-                        <button class="btn" type="submit">Save</button>
-                    </div>
-                </form>
-            </div>
+<div class="todo-app">
+    <h1>To-Do List</h1>
+    <form class="add-todo" action="../app/store.php" method="POST">
+        <label for="title" style="display: none;"></label>
+        <input type="text" id="title" name="title" placeholder="Title">
+        <div class="input-group">
+            <select id="priority" name="priority">
+                <option selected disabled>Set task priority</option>
+                <option value="1">Urgent</option>
+                <option value="2">High</option>
+                <option value="3">Normal</option>
+                <option value="4">Low</option>
+            </select>
         </div>
-        <div class="row">
-            <div class="col-12">
-                <div class="row">
-                    <div class="col-6">
-                        <?php if (isset($_SESSION['errors']['notfound'])): ?>
-                            <p class="error-message">
-                                <?php
-                                    echo $_SESSION['errors']['notfound'];
-                                    unset($_SESSION['errors']);
-                                ?>
-                            </p>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12">
-                <table class="table-responsive">
-                    <thead>
-                        <th style="width: 1%;">#</th>
-                        <?php foreach (['Title', 'Priority', 'Status', 'Created On'] as $header): ?>
-                            <th style="width: 5%;"><?php print $header; ?></th>
-                        <?php endforeach; ?>
-                        <th style="width: 1%;">Actions</th>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($tasks as $i => $task): ?>
-                            <tr>
-                                <td><?php print $i+1; ?></td>
-                                <td><?php print $task['title']; ?></td>
-                                <td><?php print \App\Enum\Priority::from($task['priority'])->label(); ?></td>
-                                <td><?php print \App\Enum\Status::from($task['status'])->label(); ?></td>
-                                <td><?php print $task['created_at']; ?></td>
-                                <td>
-                                    <?php if($task['status'] === 1): ?>
-                                        <span><strong>Done</strong></span>
-                                    <?php else: ?>
-                                        <form action="../app/update.php" method="POST">
-                                            <input type="hidden" name="_method" value="PATCH">
-                                            <input type="hidden" name="id" value="<?php echo $task['id']; ?>">
-                                            <input type="hidden" name="status" value="1">
-                                            <button class="btn btn-sm btn-danger" type="submit">Mark as Complete</button>
-                                        </form>
-                                        <form action="../app/destroy.php" method="POST">
-                                            <input type="hidden" name="_method" value="DELETE">
-                                            <input type="hidden" name="id" value="<?php echo $task['id']; ?>">
-                                            <button class="btn btn-sm btn-danger" type="submit">Delete</button>
-                                        </form>
-                                    <?php endif;?>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td>
-                                <div class="task-summary">
-                                    <p class="task-status-text"><?php print sprintf('Total: %s', $taskCount) ?></p>
-                                    <p class="task-status-text"><?php print sprintf('Completed: %s', $taskCompleted) ?></p>
-                                </div>
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
+        <div class="input-action">
+            <p class="error-message">
+                <?php if (isset($_SESSION['errors']['notfound'])): ?>
+                    <?php
+                        echo $_SESSION['errors']['notfound'];
+                        unset($_SESSION['errors']);
+                    ?>
+                <?php elseif (isset($_SESSION['errors']['title'])): ?>
+                    <?php
+                        echo $_SESSION['errors']['title'];
+                        unset($_SESSION['errors']);
+                    ?>
+                <?php endif; ?>
+            </p>
+            <button type="submit">Add</button>
         </div>
+    </form>
+    <hr class="separator">
+    <div class="filters">
+        <label>Filter by:</label>
+        <label for="priority" hidden="hidden"></label>
+        <select id="priority">
+            <option value="">Priority</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+        </select>
+        <label for="status" hidden="hidden"></label>
+        <select id="status">
+            <option value="">All Status</option>
+            <option value="completed">Completed</option>
+            <option value="incomplete">Incomplete</option>
+        </select>
     </div>
-
-    <script type="text/javascript" src="js/app.js"></script>
+    <ul id="todo-list">
+        <?php foreach($tasks as $task): ?>
+            <li class="<?php echo $task['status'] === 1 ? 'list-completed' : ''; ?>">
+                <div class="todo-info">
+                    <h2><?php echo $task['title']?></h2>
+                    <p class="todo-details">
+                        Priority: <span class="<?php echo $task['status'] === 0 ? sprintf('badge badge-%s', strtolower(\App\Enum\Priority::from($task['priority'])->label())) : ''; ?>"><?php echo \App\Enum\Priority::from($task['priority'])->label(); ?></span>
+                    </p>
+                </div>
+                <div class="todo-actions">
+                    <form id="updateStatus" action="../app/update.php" method="POST">
+                        <input id="_method" type="text" name="_method" value="PATCH" hidden="hidden">
+                        <input id="id" type="text" name="id" value="<?php echo $task['id']; ?>" hidden="hidden">
+                        <input type="text" name="completed" value="<?php echo !$task['status']; ?>" hidden="hidden">
+                        <button class="status-btn" title="<?php echo $task['status'] === 1 ? 'Mark as In-Completed' : 'Mark as Completed'; ?>" type="submit">
+                            <img src="images/status-icon.png" alt="Complete/Incomplete">
+                        </button>
+                    </form>
+                    <?php if ($task['status'] === 0): ?>
+                        <form id="deleteTask" action="../app/destroy.php" method="POST">
+                            <input id="_method" type="text" name="_method" value="DELETE" hidden="hidden">
+                            <input id="id" type="text" name="id" value="<?php echo $task['id']; ?>" hidden="hidden">
+                            <button class="remove-btn" title="Delete Task" type="submit">
+                                <img src="images/delete-icon.png" alt="Remove">
+                            </button>
+                        </form>
+                    <?php endif; ?>
+                </div>
+            </li>
+        <?php endforeach; ?>
+    </ul>
+    <div id="totals">
+        <p>Tasks: <span id="total-todos"><?php echo $taskCount; ?></span></p>
+        <p>Completed: <span id="completed-todos"><?php echo $taskCompleted; ?></span></p>
+    </div>
+</div>
+<script src="js/app.js"></script>
 </body>
 </html>

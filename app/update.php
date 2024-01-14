@@ -25,6 +25,8 @@ function update (array $attributes): bool {
     if (array_key_exists('completed', $attributes)) {
         $values .= "status = :status";
     }
+    $status = $attributes['completed'];
+    unset($attributes['completed']);
 
     foreach ($attributes as $key => $value) {
         $values .= "{$key} = :{$key}, ";
@@ -37,7 +39,7 @@ function update (array $attributes): bool {
         $statement->bindValue(':id', intval($taskId));
 
         if (str_contains($values, 'status')) {
-            $statement->bindValue(':status', intval($attributes['status']));
+            $statement->bindValue(':status', intval($status));
         }
 
         $query = $statement->getSQL(true);
